@@ -34,7 +34,7 @@
         <int:queue capacity="1000"/>
     </int:channel>
 
-    <int:channel id="filteredProductChannel" />
+    <int:channel id="filteredProductChannel"/>
 
     <int:transformer input-channel="productsObjectChannel"
                      output-channel="productListChannel" ref="productsToProductListTransformer"/>
@@ -44,7 +44,7 @@
 
     <int:filter input-channel="singleProductChannel"
                 output-channel="filteredProductChannel"
-            ref="productFilter"/>
+                ref="productFilter"/>
 
     <int:recipient-list-router input-channel="filteredProductChannel">
         <int:recipient channel="expensiveProductsChannel"
@@ -61,10 +61,8 @@
     </int:service-activator>
 
     <int:service-activator input-channel="jsonObjectChannel"
-                           ref="jsonObjectServiceActivator" >
+                           ref="jsonObjectServiceActivator">
         <int:poller fixed-rate="500"/>
     </int:service-activator>
-
-
 
 </beans>

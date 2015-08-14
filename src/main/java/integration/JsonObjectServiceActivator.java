@@ -15,7 +15,7 @@ public class JsonObjectServiceActivator {
     private ProductService productService;
 
     @ServiceActivator
-    public void printObject(String json){
+    public void printObject(String json) {
         productService.printProducts(json);
     }
 }

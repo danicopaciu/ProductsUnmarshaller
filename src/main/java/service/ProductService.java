@@ -1,7 +1,6 @@
 package service;
 
 import org.springframework.stereotype.Service;
-import persistence.model.Product;
 
 @Service
 public class ProductService {
