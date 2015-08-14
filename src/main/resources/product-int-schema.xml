@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-xml="http://www.springframework.org/schema/integration/xml"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd http://www.springframework.org/schema/integration/xml http://www.springframework.org/schema/integration/xml/spring-integration-xml.xsd">
+
+    <int:channel id="newProductsChannel"/>
+
+    <int:channel id="productsObjectChannel"/>
+
+    <int:gateway id="productsGateway"
+                 service-interface="integration.ProductGateway">
+        <int:method name="collectProducts"
+                    request-channel="newProductsChannel"/>
+    </int:gateway>
+
+    <int-xml:unmarshalling-transformer
+            id="xml-2-object-transformer" input-channel="newProductsChannel"
+            output-channel="productsObjectChannel" unmarshaller="jaxbMarshaller"/>
+
+    <bean id="jaxbMarshaller"
+          class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+        <property name="contextPath" value="product.model"/>
+    </bean>
+
+    <int:channel id="productListChannel"/>
+    <int:channel id="singleProductChannel"/>
+
+    <int:channel id="filteredProductChannel">
+        <int:queue capacity="1000"/>
+    </int:channel>
+
+    <int:transformer input-channel="productsObjectChannel"
+                     output-channel="productListChannel" ref="productsToProductListTransformer"/>
+
+    <int:splitter input-channel="productListChannel"
+                  output-channel="singleProductChannel"/>
+
+    <int:filter input-channel="singleProductChannel"
+                output-channel="filteredProductChannel"
+            ref="productFilter"/>
+
+    <int:service-activator input-channel="filteredProductChannel"
+                           ref="productServiceActivator" method="callService">
+        <int:poller fixed-rate="500"/>
+    </int:service-activator>
+
+</beans>
