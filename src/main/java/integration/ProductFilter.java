@@ -11,5 +11,4 @@ public class ProductFilter {
     public boolean accept(Product p) {
         return p.isStock();
     }
-
 }

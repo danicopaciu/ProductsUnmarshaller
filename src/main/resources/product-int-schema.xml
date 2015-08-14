@@ -26,10 +26,15 @@
 
     <int:channel id="productListChannel"/>
     <int:channel id="singleProductChannel"/>
-
-    <int:channel id="filteredProductChannel">
+    <int:channel id="expensiveProductsChannel">
         <int:queue capacity="1000"/>
     </int:channel>
+    <int:channel id="cheapProductsChannel"/>
+    <int:channel id="jsonObjectChannel">
+        <int:queue capacity="1000"/>
+    </int:channel>
+
+    <int:channel id="filteredProductChannel" />
 
     <int:transformer input-channel="productsObjectChannel"
                      output-channel="productListChannel" ref="productsToProductListTransformer"/>
@@ -41,9 +46,25 @@
                 output-channel="filteredProductChannel"
             ref="productFilter"/>
 
-    <int:service-activator input-channel="filteredProductChannel"
+    <int:recipient-list-router input-channel="filteredProductChannel">
+        <int:recipient channel="expensiveProductsChannel"
+                       selector-expression="payload.isExpensive()"/>
+        <int:recipient channel="cheapProductsChannel"
+                       selector-expression="!payload.isExpensive()"/>
+    </int:recipient-list-router>
+
+    <int:object-to-json-transformer input-channel="cheapProductsChannel" output-channel="jsonObjectChannel"/>
+
+    <int:service-activator input-channel="expensiveProductsChannel"
                            ref="productServiceActivator" method="callService">
         <int:poller fixed-rate="500"/>
     </int:service-activator>
+
+    <int:service-activator input-channel="jsonObjectChannel"
+                           ref="jsonObjectServiceActivator" >
+        <int:poller fixed-rate="500"/>
+    </int:service-activator>
+
+
 
 </beans>

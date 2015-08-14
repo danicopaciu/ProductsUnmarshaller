@@ -6,7 +6,7 @@ import persistence.model.Product;
 @Service
 public class ProductService {
 
-    public void printProducts(Product product) {
+    public void printProducts(Object product) {
         System.out.println(product.toString());
     }
 }
