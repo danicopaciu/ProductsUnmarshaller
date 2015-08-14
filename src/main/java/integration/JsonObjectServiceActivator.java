@@ -5,9 +5,6 @@ import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
 import service.ProductService;
 
-/**
- * Created by daniel.copaciu on 8/14/2015.
- */
 @MessageEndpoint
 public class JsonObjectServiceActivator {
 
